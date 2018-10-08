@@ -8,22 +8,24 @@
 
 \usepackage[pdftex]{graphicx}    
 \usepackage{cite}
+\usepackage{url}
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
 \begin{document}
 
-\title{Project Title}
+\title{American Sign Language interaction with Robot}
 
-\author{Author Name}
+\author{Jeremy Hale}
 
 \markboth{Inference project, Robotic Nanodegree, Udacity}%
 {}
 \IEEEtitleabstractindextext{%
 
 \begin{abstract}
-An abstract is meant to be a summary of all of the relevant points in your presented work. It is designed to present a high-level overview of the report, providing just enough detail to convey the necessary information The abstract may often mention a one-sentence summary of the results.  While the type of voice chosen for the paper (active or passive) may be up for debate, you should avoid the use of “I” and “me” in the report. It usually is kept to a length of 150 - 200 words. 
-Example: You should not write, “I present two different neural networks for classifying my data”. Instead, you should try to say, “Two different neural networks are used for classification”.
+There are roughly half a million users of American Sign Language (ASL)\cite{wiki:asl}. With the growing presence of companion robots in the world, it is necessary for the Deaf to be able to communicate with Robots using ASL.
+
+We present a method for recognizing the hand gestures used in ASL to represent the latin alphabet using neural networks.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -38,78 +40,57 @@ Robot, IEEEtran, Udacity, \LaTeX, deep learning.
 \section{Introduction}
 \label{sec:introduction}
 
-\IEEEPARstart{T}{he} introduction should provide some material regarding the history of the problem, why it is important and what is intended to be achieved. If there exists any previous attempts to solve this problem, this is a great place to note these while conveying the differences in your approach (if any). The intent is to provide enough information for the reader to understand why this problem is interesting and setting up the conversation for the solution you have provided
-Use this space to introduce your robotic inference idea and how you wish to apply it. 
-If you have any papers / sites you have referenced for your idea, please make sure to cite them.
+\IEEEPARstart{W}{hile} detailed research into the history of communication between deaf persons and robots was not conducted, the need for this communication to exist is readily apparent. The data science website, Kaggle, has a dataset for mnist using ASL\cite{kaggle:mnist_asl}, however, a new dataset was created to fulfill the requirements of the project. Furthemore, the Kaggle dataset is in tabular form as opposed to image form and not ready to be used with convolutional neural networks.
 
-%example for inserting image
+The dataset includes the entire latin alphabet except for letters "j" and "z" which require motion. A neural network that reconigzes motion gestures is beyond the scope of the project.
+
 \begin{figure}[thpb]
       \centering
-      \includegraphics[width=\linewidth]{RobotRevolution5}
-      \caption{Robot Revolution.}
-      \label{fig:robot1}
+      \includegraphics[width=\linewidth]{american_sign_language}
+      \caption{American Sign Language.\cite{kaggle:mnist_asl}}
+      \label{fig:asl}
 \end{figure}
 
-\subsection{Subsection Heading Here}
-Subsection text here.
-
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
-
-
-\begin{table}[h]
-\caption{Table}
-\label{table_example}
-\begin{center}
-\begin{tabular}{|c||c|}
-\hline
-One & Two\\
-\hline
-Three & Four\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-
-   
-
 \section{Background / Formulation}
-At this stage, you should begin diving into the technical details of your approach by explaining to the reader how parameters were defined, what type of network was chosen, and the reasons these items were performed. This should be factual and authoritative, meaning you should not use language such as “I think this will work” or “Maybe a network with this architecture is better..”. Instead, focus on items similar to, ”A 3-layer network architecture was chosen with X, Y, and Z parameters” 
-Explain why you chose the network you did for the supplied data set and then why you chose the network used for your robotic inference project. \cite{lamport1994latex}
+The dataset was classified using a LeNet\cite{Lecun98gradient-basedlearning} network which is available as a standard network in the nVidia DIGITS application. The network is a simple 2 block network with each block consisting of a convolutional neural network (CNN) followed by max pool layer. The CNNs have kernel size 5 and stride 1, while the max pool layers have kernel size 2 and stride 2. The CNN blocks connect to a fully-connected layer with 500 units followed by a fully-connected with the number of units equal to the number of classes.
 
-%example for Bullet point list
+The number of epochs was set to 30 while the learning rate was the default 0.01.
 
-\begin{itemize}
-\item example
-\end {itemize}
-
-
-
-%example for numbered list
-\begin{enumerate}
-\item example
-
-\end{enumerate}
+In general, the network with the fewest parameters that yields sufficient accuracy should be chosen. In this case, the LeNet is the simplest model available and was able to perform satisfactorily.
 
 \section{Data Acquisition}
-This section should discuss the data set. Items to include are the number of images, size of the images, the types of images (RGB, Grayscale, etc.), how these images were collected (including the method). Providing this information is critical if anyone would like to replicate your results. After all, the intent of reports such as these are to convey information and build upon ideas so you want to ensure others can validate your process.
-Justifying why you gathered data in this way is a helpful point, but sometimes this may be omitted here if the problem has been stated clearly in the introduction.
-It is a great idea here to have at least one or two images showing what your data looks like for the reader to visualize.
+The nVidia Jetson TX2 was used for acquiring a dataset of 11,000 images. The udacity-modification of Peter Morgan's code\cite{PeterMoran} was programmed on to the TX2 and then used to capture images of the author's hand in various ASL poses. Approximately 400 images of each letter gesture were capture for the dataset.
+
+The images were captured using the builtin camera on the TX2 against a white wall. The author attempted to keep their body and face outside of the field of view and to rotate their hand as well as move their hand around the field of view to generate a variety of camera angles.
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{test_4127}
+      \caption{Letter "M".}
+      \label{fig:letter_m}
+\end{figure}
+
+The images were then resized to 28 x 28 using Python code from \cite{Budy} to work with the expected input size for LeNet. Using nVidia DIGITS, the images were imported into a dataset of 8272 training images and 2755 validation images. They were imported as grayscale images.
 
 \section{Results}
-This is typically the hardest part of the report for many. You want to convey your results in an unbiased fashion. If you results are good, you can objectively note this. Similarly, you may do this if they are bad as well. You do not want to justify your results here with discussion; this is a topic for the next session. 
-Present the results of your robotics project model and the model you used for the supplied data with the appropriate accuracy and inference time
-For demonstrating your results, it is incredibly useful to have some charts, tables, and/or graphs for the reader to review. This makes ingesting the information quicker and easier.
+
+The LeNet network achieved greater than 99 percent accuracy on the validation data after only 5 epochs.
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{lenet_results}
+      \caption{Results.}
+      \label{fig:results}
+\end{figure}
+
 
 \section{Discussion}
-This is the only section of the report where you may include your opinion. However, make sure your opinion is based on facts. If your results are poor, make mention of what may be the underlying issues. If the results are good, why do you think this is the case? Again, avoid writing in the first person (i.e. Do not use words like “I” or “me”). If you really find yourself struggling to avoid the word “I” or “me”; sometimes, this can be avoid with the use of the word “one”. As an example: instead of : “I think the accuracy on my dataset is low because the images are too small to show the necessary detail” try: “one may believe the accuracy on the dataset is low because the images are too small to show the necessary detail”. They say the same thing, but the second avoids the first person. 
-Reflect on which is more important, inference time or accuracy, in regards to your robotic inference project.
+The excellent results are likely due to the limitations of the dataset. The dataset most likely has similarities between images in the same class that are not related to the hand gesture being made. For example, the author's red shirt is visible in most the the label "M" images but not other labels. It's possible the network was able to "cheat" by learning to recognize the presence of the shirt instead of the position of the hand.
 
 \section{Conclusion / Future work}
-This section is intended to summarize your report. Your summary should include a recap of the results, did this project achieve what you attempted, and is this a commercially viable product? 
-For Future work,address areas of work that you may not have addressed in your report as possible next steps. For future work, this could be due to time constraints, lack of currently developed methods / technology, and areas of application outside of your current implementation. Again, avoid the use of the first-person.
+The work presented here shows that it is indeed feasible to have a robot recognize the ASL alphabet and that a simple CNN-based network can be employed accurately.
+
+For a real-world application, the network would need to be improved to not only recognize the letters "J" and "Z" which include motion, but also to include an entire vocabularly of ASL words, many of which include motion.
 
 \bibliography{bib}
 \bibliographystyle{ieeetr}
